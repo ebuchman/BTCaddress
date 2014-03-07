@@ -1,3 +1,5 @@
-
+SRC=./src/
+INCLUDE=-I./include/
+CFLAGS=-Wno-deprecated-declarations
 all:
-	gcc -lssl -L/opt/local/lib -lgmp -lcrypto -o crypt crypt.c
+	gcc $(CFLAGS) -lssl -L/opt/local/lib -lgmp -lcrypto -o crypt $(SRC)addrgen.c $(SRC)crypto.c $(SRC)encoding.c $(INCLUDE) 
