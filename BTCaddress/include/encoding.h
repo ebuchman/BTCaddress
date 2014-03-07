@@ -3,8 +3,8 @@
 #ifndef ENCODINGS_INCLUDED
 #define ENCODINGS_INCLUDED
 
-int byte2hex(unsigned char *in, char *out, int N);
-int hex2byte(char *in, unsigned char *out, int N);
+void byte2hex(unsigned char *in, char *out, int N);
+void hex2byte(char *in, unsigned char *out, int N);
 void convert_bytes_to_big_int2(mpz_t u, unsigned char *bytes, int N);
 void convert_bytes_to_big_int(mpz_t u, unsigned char *bytes, int N);
 void base58encode(mpz_t U, char *addr);

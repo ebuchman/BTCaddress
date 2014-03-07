@@ -1,20 +1,18 @@
-
 #include <stdio.h>
 #include "encoding.h"
 
 
 // where N is the length of the input
-int byte2hex(unsigned char *in, char *out, int N){
+void byte2hex(unsigned char *in, char *out, int N){
     int i;
     for(i=0; i < N; i++){
         sprintf(out + (i*2), "%02x", in[i]);
     }
     out[N*2] = '\0';
-    return 0;
 }
 
 // where N is the length of the output
-int hex2byte(char *in, unsigned char *out, int N){
+void hex2byte(char *in, unsigned char *out, int N){
     int i;
     unsigned const char *pos = in;
     char  *endptr;
@@ -24,7 +22,6 @@ int hex2byte(char *in, unsigned char *out, int N){
        out[i] = strtol(buf, &endptr, 0);
        pos += 2*sizeof(char);
     }
-    return 0;
 }
 
 void convert_bytes_to_big_int2(mpz_t u, unsigned char *bytes, int N){
@@ -38,25 +35,21 @@ void convert_bytes_to_big_int2(mpz_t u, unsigned char *bytes, int N){
         mpz_mul_ui(p, p, bytes[N-1-i]);
         mpz_add(u, u, p);
     }
+    mpz_clear(p);
 }
 
 void convert_bytes_to_big_int(mpz_t u, unsigned char *bytes, int N){
-    int i, flag;
+    int i;
     
     for (i=0;i<N;i++){
         mpz_mul_ui(u, u, 256);
-        //printf("%d ", bytes[i]);
         mpz_add_ui(u, u, (int) bytes[i]);
     }
-    printf("\n");
 }
 
 void base58encode(mpz_t U, char *addr){ 
     char base58[58] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";    
-    int i;
-    mpz_t r;
-    mpz_init(r);
-    int rem;
+    int i, rem;
 
     for(i=0; mpz_sgn(U); i++){
         rem = mpz_fdiv_q_ui(U, U, 58);
