@@ -80,8 +80,10 @@ int main(){
     base58encode(n, addr);
 
     flip_str(addr, buff, strlen(addr));
+    strcpy(buff2, "1");
+    strcat(buff2, buff);
 
-    printf("bitcoin address:\t%s\n", buff);
+    printf("bitcoin address:\t%s\n", buff2);
 
     mpz_clear(n);
 
