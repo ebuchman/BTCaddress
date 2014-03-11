@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -16,18 +17,18 @@
 
 long *idum;
 
-void seed_rng(long seed){
+void rng_seed(long seed){
     idum = (long *)malloc(sizeof(long));
     *idum = seed;
 }
 
-void free_rng(){
+void rng_free(){
     free(idum);
 }
 
 /* Random number generator from Numerical Recipes*/
 
-float ran1(){
+float rng_ran1(){
   int j;
   long k;
   static long iy = 0;
@@ -64,3 +65,26 @@ float ran1(){
 }
    
 
+void rng_dev(unsigned char *seed, int byte_length){
+    FILE * fp;
+    int n, i;
+    unsigned char *byte_seed = malloc(sizeof(unsigned char)*byte_length);
+    //    printf("generating random numbers ...\n");
+    if((fp = fopen("/dev/urandom", "r")) == NULL){
+        printf("failed to open /dev/urandom\n");
+        exit(-1);
+    }
+
+    n = fread(byte_seed, 1, byte_length, fp);
+
+    if (n < 1){
+        printf("failed to read from /dev/urandom\n");
+        exit(-1);
+    }
+    else
+        printf("read %d bytes from /dev/urandom\n", n);
+
+    byte2hex(byte_seed, seed, byte_length);
+    fclose(fp);
+    free(byte_seed);
+}

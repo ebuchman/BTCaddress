@@ -10,7 +10,8 @@
 #include "crypto.h"
 #include "rng.h"
 
-/*  make sure to hash byte strings, not hex strings!
+/*  Instructions for generating a BTC address:
+    make sure to hash byte strings, not hex strings!
     0 - private ecdsa key
     1 - public ecdsa key
     2 - sha256((1))
@@ -62,7 +63,7 @@ int genAddr(uchar privBuff[64], uchar pubBuff[36], uchar pass[128]){
 
     // convert to hex, add version number (network byte), convert back
     byte2hex(hash160, buff, RIPEMD160_DIGEST_LENGTH);
-    strcpy(buff2, "00"); 
+    strcpy(buff2, "00");  // the main network byte is 00
     strcat(buff2, buff);
     hex2byte(buff2, addr25, RIPEMD160_DIGEST_LENGTH+1);
 
@@ -101,57 +102,33 @@ int genAddr(uchar privBuff[64], uchar pubBuff[36], uchar pass[128]){
     return 0;
 }
 
-void dev_random(uchar *seed, int byte_length){
-    FILE * fp;
-    int n, i;
-    uchar *byte_seed = malloc(sizeof(uchar)*byte_length);
-    //    printf("generating random numbers ...\n");
-    if((fp = fopen("/dev/urandom", "r")) == NULL){
-        printf("failed to open /dev/urandom\n");
-        exit(-1);
-    };
 
-    n = fread(byte_seed, 1, byte_length, fp);
-
-    if (n < 1){
-        printf("failed to read from /dev/urandom\n");
-        exit(-1);
-    }
-    else
-        printf("read %d bytes from /dev/urandom\n", n);
-
-    byte2hex(byte_seed, seed, byte_length);
-    fclose(fp);
-    free(byte_seed);
-}
-
-void print_bytes(uchar *bytes, int byte_length){
-    int i;
-    for(i=0;i<byte_length;i++)
-        printf("%d ", bytes[i]);
-    printf("\n");
-
-}
 
 int main(int argc, char *argv[]){
+    int N;
     char target[8];
-    if (argc == 2){
+    if (argc == 3){
         if (strlen(argv[1]) > 8){
             printf("target too long (max 8) \n");
             exit(0);
         }
         strcpy(target, argv[1]);
+        N = atoi(argv[2]);
+        if (N < 1 || N > 100){
+            printf("please limit yourself to between 1 and 100 addresses");
+            exit(0);
+        }
+
+        
     }
     else{
-        printf("usage: ./crypt me\n");
+        printf("usage: ./vanity_gen fuck 100\n\twillgenerate 100 addresses beginning with 1fuck");
         exit(0);
     }
-        
-    int N;
-    int i;
+
+    int i;    
     FILE *fp;
     int byte_length = 64;
-    //uchar *seed = malloc(sizeof(uchar)*byte_length);;
     uchar seed[byte_length*2];
     uchar pubBuff[36], privBuff[65], passBuff[128];
     PyObject *main_module, *global_dict, *function;
@@ -160,7 +137,6 @@ int main(int argc, char *argv[]){
 
     printf("searching for vanity address beginning with: %s ...\n", target);
 
-    // entropy...
     Py_Initialize();
     fp = fopen("src/check.py", "r");
     PyRun_SimpleFile(fp, "src/check.py");
@@ -171,20 +147,20 @@ int main(int argc, char *argv[]){
     function = PyDict_GetItemString(global_dict, "check_vanity");
 
     int r;
-    seed_rng(271828);
-    //for(i=0;i<10000;i++){
-    for(i=0; successes < 1; i++){
+    rng_seed(271828);
+
+    for(i=0; successes < N; i++){
         if (i % 10000 == 0){
             printf("iteration: %d\tsuccesses: %ld\n", i, successes);
-            dev_random(seed, byte_length);
+            rng_dev(seed, byte_length);
         }
-        r = (int) byte_length*ran1();
+        r = (int) byte_length*rng_ran1();
         
         seed[r] = (seed[r] + 1)%256;
-//        print_bytes(seed, 64);
         genAddr(privBuff, pubBuff, seed);
-//        printf("%s\n%s\n%s\n%s\n\n", privBuff,pubBuff,passBuff, target);
-        //printf("%ld, %ld, %ld, %ld\n", strlen(privBuff), strlen(pubBuff), strlen(passBuff), strlen(target));
+
+        //printf("%s\n%s\n%s\n%s\n\n", privBuff,pubBuff,passBuff, target);
+
         success=PyObject_CallFunction(function, "sss", pubBuff, privBuff, target);
         PyErr_Print();
         successes += PyInt_AsLong(success);
