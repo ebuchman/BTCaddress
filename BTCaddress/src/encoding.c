@@ -47,6 +47,13 @@ void convert_bytes_to_big_int(mpz_t u, unsigned char *bytes, int N){
     }
 }
 
+void print_bytes(unsigned char *bytes, int byte_length){
+    int i;
+    for(i=0;i<byte_length;i++)
+        printf("%d ", bytes[i]);
+    printf("\n");
+}
+
 void base58encode(mpz_t U, char *addr){ 
     char base58[58] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";    
     int i, rem;
