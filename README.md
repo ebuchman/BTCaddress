@@ -9,4 +9,4 @@ You will probably have to adjust library paths in the makefile
 
 Tips:
 
-BTC 1FuCkqDn8e2ZKm6ZS92N7mkHHFZ7Fna7U6
+BTC:    1FuCkqDn8e2ZKm6ZS92N7mkHHFZ7Fna7U6
