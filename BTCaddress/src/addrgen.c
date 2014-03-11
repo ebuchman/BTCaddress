@@ -138,6 +138,8 @@ int main(int argc, char *argv[]){
     printf("searching for vanity address beginning with: %s ...\n", target);
 
     Py_Initialize();
+    PyRun_SimpleString("import os");
+    PyRun_SimpleString("if not os.path.exists('data'): os.makedirs('data')");
     fp = fopen("src/check.py", "r");
     PyRun_SimpleFile(fp, "src/check.py");
 
