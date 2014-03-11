@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
         
     }
     else{
-        printf("usage: ./vanity_gen fuck 100\n\twillgenerate 100 addresses beginning with 1fuck");
+        printf("usage: ./vanity_gen fuck 100\n\twillgenerate 100 addresses beginning with 1fuck\n");
         exit(0);
     }
 
@@ -171,8 +171,5 @@ int main(int argc, char *argv[]){
 
     return 0;
 }
-
-
-
 
 
